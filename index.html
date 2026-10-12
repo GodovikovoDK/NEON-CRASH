@@ -22,6 +22,7 @@ async function initVKSDK() {
         vkSDKReady = true;
 
         console.log("VK Mini Apps SDK инициализирован");
+		loadCloudBest();
     } catch (error) {
         console.error(
             "Ошибка инициализации VK Mini Apps SDK:",
@@ -6807,7 +6808,6 @@ menuAnimation =
     );
 	
 	initVKSDK();
-	loadCloudBest();
 
 </script>
 
