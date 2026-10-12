@@ -4310,7 +4310,7 @@ document.addEventListener("visibilitychange", function() {
 =================================== */
 
 function startGame() {
-
+	loadCloudBest();
     if (menuAnimation) {
 
         cancelAnimationFrame(
@@ -4324,7 +4324,7 @@ function startGame() {
     cancelAnimationFrame(animation);
 
     countdownToken++;
-
+	
     clearCountdownTimer();
 
     resetGame();
