@@ -4377,9 +4377,8 @@ function startGame() {
 }
 
 function shareGame() {
-    const btn = document.getElementById('share-game');
 
-    bridge.send('VKWebAppShare', { link: 'https://vk.ru/app54818337', text: 'Присоединяйся и попробуй побить мой рекорд!' })
+    vkBridge.send('VKWebAppShare', { link: 'https://vk.ru/app54818337', text: 'Присоединяйся и попробуй побить мой рекорд!' })
         .then((data) => {
             if (data.result) {
                 // Пользователь успешно поделился (опубликовал историю/отправил сообщение)
@@ -4395,8 +4394,7 @@ function shareGame() {
 }
 
 	function reccomendedGame(){
-		const btn = document.getElementById('reccomended-game');
-    bridge.send('VKWebAppRecommend')
+    vkBridge.send('VKWebAppRecommend')
         .then((data) => {
             if (data.result) {
                 // Мини-приложение успешно порекомендовано
