@@ -999,7 +999,7 @@ canvas {
    MAIN MENU — PLAY BUTTON
 ========================================================= */
 
-#startScreen #start {
+#startScreen #start, #share-game, #reccomended-game {
     position: relative;
 
     display: flex;
@@ -2209,6 +2209,13 @@ canvas {
 
             <button id="start">
                 ИГРАТЬ
+            </button>
+
+						            <button id="share-game">
+                ПОДЕЛИТЬСЯ
+            </button>
+			            <button id="reccomended-game">
+                ПРИГЛАСИТЬ ДРУЗЕЙ
             </button>
 
 
@@ -4368,6 +4375,49 @@ function startGame() {
             loop
         );
 }
+
+function shareGame() {
+    const btn = document.getElementById('share-game');
+
+    bridge.send('VKWebAppShare', { link: 'https://vk.ru/app54818337', text: 'Присоединяйся и попробуй побить мой рекорд!' })
+        .then((data) => {
+            if (data.result) {
+                // Пользователь успешно поделился (опубликовал историю/отправил сообщение)
+                console.log('Ссылка опубликована!');
+            } else {
+                // Пользователь закрыл окно без публикации
+                console.log('Действие отменено пользователем');
+            }
+        })
+        .catch((error) => {
+            console.error('Ошибка VK Bridge:', error);
+        });
+}
+
+	function reccomendedGame(){
+		const btn = document.getElementById('reccomended-game');
+    bridge.send('VKWebAppRecommend')
+        .then((data) => {
+            if (data.result) {
+                // Мини-приложение успешно порекомендовано
+                btn.textContent = 'Готово!';
+                console.log('Приложение порекомендовано');
+            } else {
+                // Пользователь закрыл окно рекомендации без действия
+                btn.disabled = false;
+                btn.textContent = 'Порекомендовать приложение';
+                console.log('Действие отменено пользователем');
+            }
+        })
+        .catch((error) => {
+            // Ошибка (например, если скрипт запущен не внутри VK)
+            console.error('Ошибка VK Bridge:', error);
+            btn.disabled = false;
+            btn.textContent = 'Ошибка, попробуйте снова';
+        });
+		
+	}
+
 
 
 /* ===================================
@@ -6683,6 +6733,20 @@ document
     .addEventListener(
         "click",
         startGame
+    );
+
+	document
+    .getElementById("share-game")
+    .addEventListener(
+        "click",
+        shareGame
+    );
+
+		document
+    .getElementById("reccomended-game")
+    .addEventListener(
+        "click",
+        reccomendedGame
     );
 
 
