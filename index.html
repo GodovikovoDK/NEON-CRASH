@@ -4400,20 +4400,15 @@ function shareGame() {
         .then((data) => {
             if (data.result) {
                 // Мини-приложение успешно порекомендовано
-                btn.textContent = 'Готово!';
                 console.log('Приложение порекомендовано');
             } else {
                 // Пользователь закрыл окно рекомендации без действия
-                btn.disabled = false;
-                btn.textContent = 'Порекомендовать приложение';
                 console.log('Действие отменено пользователем');
             }
         })
         .catch((error) => {
             // Ошибка (например, если скрипт запущен не внутри VK)
             console.error('Ошибка VK Bridge:', error);
-            btn.disabled = false;
-            btn.textContent = 'Ошибка, попробуйте снова';
         });
 		
 	}
