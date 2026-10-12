@@ -30,7 +30,6 @@ async function initVKSDK() {
     }
 }
 
-initVKSDK();
 </script>
 
 
@@ -2582,12 +2581,103 @@ const continueCountdownElement =
     );
 
 
-let best =
-    Number(
-        localStorage.getItem(
-            "dontCrashBest2"
-        ) || 0
+const CLOUD_BEST_KEY = "neon_crash_best";
+
+let best = 0;
+let cloudSaveQueue = Promise.resolve();
+
+// Загрузка рекорда из VK Storage.
+async function loadCloudBest() {
+    if (!window.vkBridge || !vkSDKReady) {
+        return;
+    }
+
+    try {
+        const result = await window.vkBridge.send(
+            "VKWebAppStorageGet",
+            {
+                keys: [CLOUD_BEST_KEY]
+            }
+        );
+
+        const storedValue =
+            result?.keys?.find(
+                item => item.key === CLOUD_BEST_KEY
+            )?.value;
+
+        const cloudBest =
+            Number(storedValue || 0);
+
+        if (
+            Number.isFinite(cloudBest) &&
+            cloudBest >= 0
+        ) {
+            best = Math.floor(cloudBest);
+
+            bestElement.textContent = best;
+            menuBest.textContent = best;
+        }
+
+        console.log(
+            "Облачный рекорд загружен:",
+            best
+        );
+
+    } catch (error) {
+        console.warn(
+            "Не удалось загрузить рекорд из VK Storage:",
+            error
+        );
+    }
+}
+
+// Сохранение рекорда в VK Storage.
+// Последовательная очередь не позволяет более старой
+// записи случайно перезаписать новую.
+function saveCloudBest(value) {
+    const record = Math.max(
+        0,
+        Math.floor(Number(value) || 0)
     );
+
+    if (!window.vkBridge || !vkSDKReady) {
+        console.warn(
+            "VK Storage недоступен. Рекорд пока не сохранён."
+        );
+        return Promise.resolve(false);
+    }
+
+    cloudSaveQueue = cloudSaveQueue
+        .catch(() => {})
+        .then(async () => {
+            const result = await window.vkBridge.send(
+                "VKWebAppStorageSet",
+                {
+                    key: CLOUD_BEST_KEY,
+                    value: String(record)
+                }
+            );
+
+            if (result?.result === true) {
+                console.log(
+                    "Облачный рекорд сохранён:",
+                    record
+                );
+                return true;
+            }
+
+            return false;
+        })
+        .catch(error => {
+            console.warn(
+                "Ошибка облачного сохранения:",
+                error
+            );
+            return false;
+        });
+
+    return cloudSaveQueue;
+}
 
 bestElement.textContent =
     best;
@@ -4607,10 +4697,7 @@ function finishGame() {
 
         best = score;
 
-        localStorage.setItem(
-            "dontCrashBest2",
-            String(best)
-        );
+        void saveCloudBest(best);
     }
 
 
@@ -6716,6 +6803,8 @@ menuAnimation =
     requestAnimationFrame(
         menuLoop
     );
+	
+	initVKSDK();
 
 </script>
 
