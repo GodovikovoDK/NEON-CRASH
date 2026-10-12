@@ -1,0 +1,6731 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+
+
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+
+<script>
+"use strict";
+
+let vkSDKReady = false;
+
+async function initVKSDK() {
+    try {
+        if (!window.vkBridge) {
+            throw new Error("VK Bridge не загружен");
+        }
+
+        await window.vkBridge.send("VKWebAppInit");
+
+        vkSDKReady = true;
+
+        console.log("VK Mini Apps SDK инициализирован");
+    } catch (error) {
+        console.error(
+            "Ошибка инициализации VK Mini Apps SDK:",
+            error
+        );
+    }
+}
+
+initVKSDK();
+</script>
+
+
+
+<meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             maximum-scale=1,
+             user-scalable=no"
+>
+
+<title>NEON CRASH</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+
+    -webkit-user-drag: none;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #070b18;
+    font-family: Arial, sans-serif;
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+
+    -webkit-touch-callout: none;
+}
+
+button {
+    font-family: Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
+/* =========================================================
+   GAME
+========================================================= */
+
+#game {
+    position: relative;
+
+    width: min(500px, 100vw);
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #263875 0%,
+            #111936 42%,
+            #060913 100%
+        );
+
+    color: white;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    -webkit-user-drag: none;
+}
+
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+canvas {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    -webkit-user-drag: none;
+}
+
+
+/* =========================================================
+   TOP GAME UI
+========================================================= */
+
+.ui {
+    position: absolute;
+
+    top: 16px;
+    left: 16px;
+    right: 16px;
+
+    z-index: 10;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    pointer-events: none;
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+
+/* SCORE */
+
+.score {
+    min-width: 74px;
+
+    padding: 7px 13px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(20, 35, 80, .55);
+
+    border:
+        1px solid
+        rgba(120, 220, 255, .22);
+
+    color: #ffffff;
+
+    font-size: 30px;
+    font-weight: 900;
+
+    line-height: 1;
+
+    text-shadow:
+        0 0 12px
+        rgba(90, 220, 255, .8);
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, .2);
+}
+
+
+/* BEST */
+
+.best {
+    padding: 7px 12px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(20, 35, 80, .45);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .10);
+
+    color: #8798cf;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    text-align: right;
+}
+
+.best span {
+    color: #ffffff;
+
+    font-size: 17px;
+
+    text-shadow:
+        0 0 10px
+        rgba(255, 255, 255, .4);
+}
+
+
+/* =========================================================
+   PAUSE BUTTON
+========================================================= */
+
+#pauseButton {
+    position: absolute;
+
+    top: 15px;
+    left: 50%;
+
+    z-index: 30;
+
+    width: 44px;
+    height: 44px;
+
+    transform: translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    border:
+        1px solid
+        rgba(120, 220, 255, .24);
+
+    background:
+        rgba(20, 35, 80, .62);
+
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, .25),
+
+        0 0 18px
+        rgba(80, 180, 255, .08),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, .10);
+
+    backdrop-filter:
+        blur(8px);
+
+    -webkit-backdrop-filter:
+        blur(8px);
+
+    transition:
+        transform .15s ease,
+        background .15s ease,
+        filter .15s ease;
+}
+
+#pauseButton:hover {
+    filter: brightness(1.12);
+
+    background:
+        rgba(35, 55, 110, .72);
+}
+
+#pauseButton:active {
+    transform:
+        translateX(-50%)
+        scale(.92);
+}
+
+#pauseButton:focus-visible {
+    outline:
+        2px solid
+        rgba(110, 231, 255, .8);
+
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    position: absolute;
+    inset: 0;
+
+    z-index: 50;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(58, 91, 210, .12),
+            transparent 42%
+        );
+
+    backdrop-filter: blur(3px);
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================================
+   PAUSE SCREEN
+========================================================= */
+
+#pauseScreen {
+    z-index: 80;
+
+    background:
+        rgba(3, 7, 20, .62);
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+}
+
+#pauseScreen .panel {
+    position: relative;
+
+    width:
+        calc(100% - 40px);
+
+    max-width: 380px;
+
+    padding:
+        34px 25px;
+
+    border-radius: 28px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(38, 55, 110, .94),
+            rgba(12, 19, 48, .96)
+        );
+
+    border:
+        1px solid
+        rgba(150, 220, 255, .20);
+
+    box-shadow:
+        0 30px 80px
+        rgba(0, 0, 0, .65),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, .12);
+
+    backdrop-filter:
+        blur(20px);
+
+    -webkit-backdrop-filter:
+        blur(20px);
+
+    animation:
+        pausePanelIn
+        .25s
+        cubic-bezier(.2,.9,.3,1)
+        both;
+}
+
+#pauseScreen .pause-title {
+    color: #ffffff;
+
+    font-size: 38px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 10px
+        rgba(255, 255, 255, .3),
+
+        0 0 30px
+        rgba(70, 190, 255, .45);
+}
+
+#pauseScreen .pause-description {
+    margin-top: 8px;
+    margin-bottom: 25px;
+
+    color: #9daed8;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    letter-spacing: .5px;
+}
+
+#pauseScreen .pause-resume-button {
+    position: relative;
+
+    width: 100%;
+    height: 58px;
+
+    margin-top: 0;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .25);
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #35e8ff,
+            #587cff,
+            #974dff
+        );
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px
+        rgba(55, 115, 255, .3);
+
+    transition:
+        transform .15s ease,
+        filter .15s ease;
+}
+
+#pauseScreen .pause-resume-button:hover {
+    filter: brightness(1.08);
+
+    transform:
+        translateY(-1px);
+}
+
+#pauseScreen .pause-resume-button:active {
+    transform:
+        scale(.97);
+}
+
+#pauseScreen .pause-home-button {
+    width: 100%;
+    height: 52px;
+
+    margin-top: 10px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255, 255, 255, .08);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .12);
+
+    box-shadow: none;
+
+    color: #aebce8;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        transform .15s ease;
+}
+
+#pauseScreen .pause-home-button:hover {
+    background:
+        rgba(255, 255, 255, .13);
+
+    transform:
+        translateY(-1px);
+}
+
+#pauseScreen .pause-home-button:active {
+    transform:
+        scale(.97);
+}
+
+@keyframes pausePanelIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px)
+            scale(.96);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   MAIN MENU
+========================================================= */
+
+#startScreen {
+    align-items: stretch;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(4, 8, 25, .18),
+            rgba(4, 7, 18, .48)
+        );
+
+    backdrop-filter: blur(2px);
+}
+
+#startScreen::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 50%;
+
+    width: 180px;
+    height: 2px;
+
+    transform: translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #6ee7ff,
+            #8d65ff,
+            transparent
+        );
+
+    box-shadow:
+        0 0 20px #6ee7ff;
+
+    opacity: .8;
+
+    pointer-events: none;
+}
+
+#startScreen::after {
+    content: "";
+
+    position: absolute;
+
+    width: 360px;
+    height: 360px;
+
+    left: 50%;
+    top: 42%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(73, 113, 255, .15),
+            rgba(35, 70, 180, .05) 40%,
+            transparent 70%
+        );
+
+    filter: blur(10px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   MAIN MENU CONTENT
+========================================================= */
+
+#startScreen .panel {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    height: 100%;
+
+    padding:
+        55px
+        28px
+        30px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    text-align: center;
+
+    background: transparent;
+
+    border: 0;
+
+    box-shadow: none;
+
+    backdrop-filter: none;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+#startScreen .logo {
+    position: relative;
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size:
+        clamp(
+            42px,
+            11vw,
+            58px
+        );
+
+    font-weight: 900;
+
+    line-height: .88;
+
+    letter-spacing: -3px;
+
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, .35),
+        0 0 25px rgba(92, 130, 255, .55),
+        0 0 55px rgba(92, 110, 255, .25);
+
+    animation:
+        menuLogoIn
+        .8s
+        cubic-bezier(.2, .9, .3, 1)
+        both;
+}
+
+#startScreen .logo span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #6ee7ff;
+
+    font-size: 1.08em;
+
+    text-shadow:
+        0 0 10px #6ee7ff,
+        0 0 25px rgba(80, 210, 255, .8),
+        0 0 50px rgba(80, 150, 255, .35);
+}
+
+#startScreen .logo::after {
+    content:
+        "НЕ ДАЙ ШАРИКУ ВРЕЗАТЬСЯ";
+
+    display: block;
+
+    margin-top: 20px;
+
+    color:
+        rgba(154, 174, 225, .7);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 3px;
+
+    text-shadow: none;
+}
+
+
+/* =========================================================
+   MENU DEMO
+========================================================= */
+
+.menu-demo {
+    position: relative;
+
+    width:
+        min(
+            330px,
+            85vw
+        );
+
+    height: 270px;
+
+    margin-top: 22px;
+    margin-bottom: 10px;
+
+    animation:
+        demoIn
+        .9s
+        .12s
+        cubic-bezier(.2, .9, .3, 1)
+        both;
+}
+
+.menu-demo::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 5px;
+
+    width: 1px;
+    height: 260px;
+
+    transform: translateX(-50%);
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent,
+            rgba(110, 231, 255, .18),
+            transparent
+        );
+}
+
+.demo-wall-left,
+.demo-wall-right {
+    position: absolute;
+
+    top: 50%;
+
+    height: 24px;
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff315f,
+            #ff5c8a,
+            #a51fff
+        );
+
+    box-shadow:
+        0 0 12px rgba(255, 55, 120, .9),
+        0 0 30px rgba(255, 50, 130, .55);
+
+    transform:
+        translateY(-50%);
+}
+
+.demo-wall-left {
+    left: 0;
+    width: 36%;
+}
+
+.demo-wall-right {
+    right: 0;
+    width: 36%;
+}
+
+.demo-wall-left::after,
+.demo-wall-right::after {
+    content: "";
+
+    position: absolute;
+
+    top: -70px;
+
+    width: 70%;
+    height: 14px;
+
+    border-radius: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff315f,
+            #9b4dff
+        );
+
+    box-shadow:
+        0 0 18px rgba(255, 50, 130, .55);
+}
+
+.demo-wall-left::after {
+    left: 20%;
+}
+
+.demo-wall-right::after {
+    right: 20%;
+}
+
+
+/* =========================================================
+   DEMO BALL
+========================================================= */
+
+.demo-ball {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 25px;
+    height: 25px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #ffffff 0%,
+            #d8fbff 25%,
+            #52eaff 55%,
+            #3867ff 100%
+        );
+
+    box-shadow:
+        0 0 10px #6ee7ff,
+        0 0 25px #38dfff,
+        0 0 55px rgba(56, 150, 255, .8);
+
+    animation:
+        demoBall
+        2.4s
+        ease-in-out
+        infinite;
+}
+
+.demo-ball::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -12px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(110, 231, 255, .15);
+
+    box-shadow:
+        0 0 20px
+        rgba(70, 220, 255, .2);
+}
+
+
+/* =========================================================
+   DEMO PARTICLES
+========================================================= */
+
+.demo-particle {
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: #6ee7ff;
+
+    box-shadow:
+        0 0 10px #6ee7ff;
+
+    opacity: .7;
+}
+
+.demo-particle.p1 {
+    left: 40%;
+    top: 44%;
+
+    animation:
+        particleFloat
+        2s
+        infinite;
+}
+
+.demo-particle.p2 {
+    left: 57%;
+    top: 57%;
+
+    animation:
+        particleFloat
+        2.5s
+        .4s
+        infinite;
+}
+
+.demo-particle.p3 {
+    left: 45%;
+    top: 62%;
+
+    animation:
+        particleFloat
+        1.8s
+        .7s
+        infinite;
+}
+
+
+/* =========================================================
+   MENU DESCRIPTION
+========================================================= */
+
+#startScreen .description {
+    margin: 0;
+
+    color: #8f9ecb;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    letter-spacing: .5px;
+
+    animation:
+        fadeUp
+        .7s
+        .25s
+        both;
+}
+
+#startScreen .description b {
+    display: none;
+}
+
+
+/* =========================================================
+   MAIN MENU — PLAY BUTTON
+========================================================= */
+
+#startScreen #start {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width:
+        min(
+            330px,
+            86vw
+        );
+
+    height: 62px;
+
+    margin-top: 18px;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .28);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #35e8ff 0%,
+            #587cff 50%,
+            #974dff 100%
+        );
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 1px 4px
+        rgba(0, 0, 0, .18);
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 35px
+        rgba(55, 115, 255, .38),
+
+        0 0 25px
+        rgba(70, 160, 255, .12),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, .5);
+
+    animation:
+        buttonIn
+        .7s
+        .35s
+        both;
+
+    transition:
+        transform .15s ease,
+        filter .15s ease,
+        box-shadow .15s ease;
+}
+
+#startScreen #start::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 70%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, .28),
+            transparent
+        );
+
+    transform:
+        skewX(-20deg);
+
+    animation:
+        buttonShine
+        3s
+        1s
+        infinite;
+
+    pointer-events: none;
+}
+
+#startScreen #start:hover {
+    filter: brightness(1.08);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 14px 40px
+        rgba(55, 115, 255, .5),
+
+        0 0 30px
+        rgba(70, 160, 255, .2),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, .55);
+}
+
+#startScreen #start:active {
+    transform:
+        scale(.96);
+
+    filter: brightness(.95);
+}
+
+#startScreen #start:focus-visible {
+    outline:
+        2px solid
+        rgba(110, 231, 255, .8);
+
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MENU RECORD
+========================================================= */
+
+.menu-best {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 17px;
+
+    color: #7584b1;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    animation:
+        fadeUp
+        .7s
+        .45s
+        both;
+}
+
+.menu-best strong {
+    color: #ffffff;
+
+    font-size: 15px;
+
+    letter-spacing: 0;
+
+    text-shadow:
+        0 0 12px
+        rgba(255, 255, 255, .35);
+}
+
+
+/* =========================================================
+   MENU HINT
+========================================================= */
+
+#startScreen .hint {
+    margin-top: auto;
+    margin-bottom: 4px;
+
+    color: #65739d;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    animation:
+        fadeUp
+        .7s
+        .55s
+        both;
+}
+
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+#gameOver .panel {
+    width:
+        calc(100% - 40px);
+
+    max-width: 380px;
+
+    padding:
+        34px 25px;
+
+    border-radius: 28px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(38, 55, 110, .92),
+            rgba(12, 19, 48, .94)
+        );
+
+    border:
+        1px solid
+        rgba(150, 220, 255, .20);
+
+    box-shadow:
+        0 30px 80px
+        rgba(0, 0, 0, .65),
+
+        inset 0 1px 0
+        rgba(255, 255, 255, .12);
+
+    backdrop-filter:
+        blur(20px);
+}
+
+#gameOver .logo {
+    color: #ffffff;
+
+    font-size: 39px;
+
+    font-weight: 900;
+
+    text-shadow:
+        0 0 10px
+        rgba(255, 255, 255, .3),
+
+        0 0 30px
+        rgba(255, 70, 100, .5);
+}
+
+#gameOver .description {
+    margin-bottom: 25px;
+
+    color: #aab6df;
+
+    line-height: 1.5;
+}
+
+.final-score {
+    margin:
+        10px 0 20px;
+
+    color: #ffffff;
+
+    font-size: 58px;
+
+    font-weight: 900;
+
+    text-shadow:
+        0 0 25px
+        rgba(100, 220, 255, .35);
+}
+
+
+/* =========================================================
+   GAME OVER — CONTINUE
+========================================================= */
+
+#gameOver #continue {
+    position: relative;
+
+    width: 100%;
+    height: 58px;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .25);
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #35e8ff,
+            #587cff,
+            #974dff
+        );
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px
+        rgba(55, 115, 255, .3);
+
+    transition:
+        transform .15s ease,
+        filter .15s ease;
+}
+
+#gameOver #continue:hover {
+    filter: brightness(1.08);
+
+    transform:
+        translateY(-1px);
+}
+
+#gameOver #continue:active {
+    transform:
+        scale(.97);
+}
+
+#gameOver #continue.used {
+    opacity: .35;
+
+    pointer-events: none;
+
+    background:
+        #303750;
+
+    border-color:
+        rgba(255, 255, 255, .08);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   GAME OVER — RESTART
+========================================================= */
+
+#gameOver .restart-button {
+    width: 100%;
+    height: 52px;
+
+    margin-top: 10px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255, 255, 255, .08);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .12);
+
+    box-shadow: none;
+
+    color: #aebce8;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        transform .15s ease;
+}
+
+#gameOver .restart-button:hover {
+    background:
+        rgba(255, 255, 255, .13);
+
+    transform:
+        translateY(-1px);
+}
+
+#gameOver .restart-button:active {
+    transform:
+        scale(.97);
+}
+
+
+/* GAME OVER HINT */
+
+#gameOver .hint {
+    margin-top: 18px;
+
+    color: #65739d;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    transition:
+        color .2s ease,
+        text-shadow .2s ease;
+}
+
+
+/* =========================================================
+   NEW RECORD
+========================================================= */
+
+#gameOver .hint.new-record {
+    color: #6ee7ff;
+
+    text-shadow:
+        0 0 8px rgba(110, 231, 255, .7),
+        0 0 20px rgba(80, 170, 255, .4);
+}
+
+
+/* =========================================================
+   COMBO
+========================================================= */
+
+#combo {
+    position: absolute;
+
+    top: 85px;
+
+    width: 100%;
+
+    z-index: 20;
+
+    color: #ffe66d;
+
+    font-size: 23px;
+
+    font-weight: 900;
+
+    text-align: center;
+
+    opacity: 0;
+
+    transform:
+        scale(.7);
+
+    transition:
+        opacity .2s,
+        transform .2s;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CONTINUE COUNTDOWN
+========================================================= */
+
+#continueCountdown {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    z-index: 90;
+
+    width: 100%;
+    padding: 0 15px;
+
+    text-align: center;
+
+    font-size: clamp(48px, 18vw, 90px);
+    line-height: 1;
+    font-weight: 900;
+
+    white-space: nowrap;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 10px #6ee7ff,
+        0 0 30px #6ee7ff,
+        0 0 60px #586dff;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.5);
+
+    pointer-events: none;
+
+    transition:
+        opacity .2s ease,
+        transform .35s cubic-bezier(.2, 1.5, .4, 1);
+}
+
+#continueCountdown.show {
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+}
+
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes menuLogoIn {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-25px)
+            scale(.9);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes demoIn {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(25px)
+            scale(.92);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes buttonIn {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(20px)
+            scale(.94);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+@keyframes demoBall {
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            translateX(-48px);
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            translateX(48px);
+    }
+}
+
+@keyframes particleFloat {
+    0%,
+    100% {
+        transform:
+            translate(0, 0);
+
+        opacity: .25;
+    }
+
+    50% {
+        transform:
+            translate(10px, -15px);
+
+        opacity: 1;
+    }
+}
+
+@keyframes buttonShine {
+    0% {
+        left: -100%;
+    }
+
+    35%,
+    100% {
+        left: 140%;
+    }
+}
+
+
+/* =========================
+   MOBILE ADJUSTMENTS
+========================= */
+
+@media (max-height: 700px) {
+
+    #startScreen .panel {
+        padding-top: 55px;
+    }
+
+    #startScreen .logo {
+        font-size: 40px;
+    }
+
+    #startScreen .logo::after {
+        margin-top: 14px;
+    }
+
+    .menu-demo {
+        height: 205px;
+
+        margin-top: 12px;
+    }
+
+    .menu-demo::before {
+        height: 195px;
+    }
+
+    #startScreen #start {
+        height: 56px;
+
+        margin-top: 12px;
+    }
+
+    .menu-best {
+        margin-top: 12px;
+    }
+}
+
+
+@media (max-height: 580px) {
+
+    #startScreen .panel {
+        padding-top: 35px;
+        padding-bottom: 18px;
+    }
+
+    #startScreen .logo {
+        font-size: 34px;
+    }
+
+    #startScreen .logo::after {
+        margin-top: 9px;
+
+        font-size: 8px;
+    }
+
+    .menu-demo {
+        height: 145px;
+
+        margin-top: 5px;
+        margin-bottom: 3px;
+    }
+
+    .menu-demo::before {
+        height: 140px;
+    }
+
+    .demo-wall-left,
+    .demo-wall-right {
+        height: 18px;
+    }
+
+    .demo-wall-left::after,
+    .demo-wall-right::after {
+        top: -45px;
+
+        height: 10px;
+    }
+
+    .demo-ball {
+        width: 20px;
+        height: 20px;
+    }
+
+    #startScreen .description {
+        font-size: 10px;
+    }
+
+    #startScreen #start {
+        height: 50px;
+
+        margin-top: 8px;
+
+        border-radius: 15px;
+
+        font-size: 15px;
+    }
+
+    .menu-best {
+        margin-top: 8px;
+    }
+
+    #startScreen .hint {
+        font-size: 8px;
+    }
+}
+
+
+/* =========================
+   MAIN MENU — HIDE GAME HUD
+========================= */
+
+#game.menu-active .ui {
+    display: none;
+}
+
+#game.menu-active #pauseButton {
+    display: none;
+}
+
+
+/* =========================
+   COUNTDOWN — HIDE PAUSE
+========================= */
+
+#game.countdown-active #pauseButton {
+    display: none;
+}
+
+
+/* =========================
+   GAME SIGN
+========================= */
+
+.game-sign {
+    position: relative;
+
+    width: min(340px, 88vw);
+    height: 125px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 5px;
+
+    animation:
+        signIn .9s cubic-bezier(.2,.9,.3,1) both;
+}
+
+.sign-glow {
+    position: absolute;
+
+    width: 280px;
+    height: 110px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(45,220,255,.24),
+            rgba(75,80,255,.12) 40%,
+            transparent 72%
+        );
+
+    filter: blur(20px);
+
+    animation:
+        signPulse 3s ease-in-out infinite;
+}
+
+.sign-frame {
+    position: relative;
+
+    width: 100%;
+    height: 105px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20,31,75,.92),
+            rgba(7,12,34,.94)
+        );
+
+    border:
+        1px solid
+        rgba(110,231,255,.35);
+
+    box-shadow:
+
+        0 0 0 1px
+        rgba(130,90,255,.12),
+
+        0 15px 45px
+        rgba(0,0,0,.45),
+
+        0 0 35px
+        rgba(45,190,255,.18),
+
+        inset 0 1px 0
+        rgba(255,255,255,.16);
+
+    overflow: hidden;
+}
+
+.sign-frame::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 10%;
+
+    width: 80%;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #6ee7ff,
+            #9d6cff,
+            #6ee7ff,
+            transparent
+        );
+
+    box-shadow:
+        0 0 12px #6ee7ff;
+}
+
+.sign-title {
+    position: relative;
+
+    margin-bottom: -3px;
+
+    font-size: 22px;
+
+    font-weight: 1000;
+
+    letter-spacing: 8px;
+
+    color: #ffffff;
+
+    text-indent: 8px;
+
+    text-shadow:
+        0 0 5px #fff,
+        0 0 12px #6ee7ff,
+        0 0 25px #38dfff,
+        0 0 45px rgba(56,150,255,.8);
+}
+
+.sign-name {
+    position: relative;
+
+    font-size: 46px;
+
+    font-weight: 1000;
+
+    line-height: .9;
+
+    letter-spacing: 3px;
+
+    color: #6ee7ff;
+
+    text-shadow:
+        0 0 5px #fff,
+        0 0 10px #6ee7ff,
+        0 0 25px #38dfff,
+        0 0 50px rgba(56,150,255,.75);
+}
+
+.sign-light {
+    position: absolute;
+
+    top: 50%;
+
+    width: 5px;
+    height: 5px;
+
+    transform:
+        translateY(-50%);
+
+    border-radius: 50%;
+
+    background: #6ee7ff;
+
+    box-shadow:
+        0 0 8px #6ee7ff,
+        0 0 18px #38dfff;
+
+    animation:
+        lightBlink 2.5s infinite;
+}
+
+.light-left {
+    left: 9px;
+}
+
+.light-right {
+    right: 9px;
+
+    animation-delay: 1.2s;
+}
+
+@keyframes signIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-25px)
+            scale(.88);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes signPulse {
+
+    0%,
+    100% {
+        opacity: .65;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.95);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+    }
+}
+
+@keyframes lightBlink {
+
+    0%,
+    90%,
+    100% {
+        opacity: 1;
+    }
+
+    94% {
+        opacity: .35;
+    }
+}
+
+
+/* =========================
+   MENU LIVE PREVIEW
+========================= */
+
+#startScreen {
+    pointer-events: auto;
+}
+
+#startScreen .menu-demo {
+    z-index: 3;
+}
+
+#startScreen .menu-demo {
+    opacity: .92;
+
+    filter:
+        saturate(.9)
+        brightness(.9);
+}
+
+
+/* =========================
+   MENU AMBIENT GLOW
+========================= */
+
+#startScreen .panel::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 70px;
+
+    width: 260px;
+    height: 100px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(50,180,255,.12),
+            transparent 70%
+        );
+
+    filter: blur(20px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   GAME OVER — HOME
+========================================================= */
+
+#gameOver .home-button {
+    width: 100%;
+    height: 48px;
+
+    margin-top: 8px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(110, 231, 255, .05);
+
+    border:
+        1px solid
+        rgba(110, 231, 255, .15);
+
+    box-shadow: none;
+
+    color: #7184b8;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        color .15s ease,
+        transform .15s ease,
+        border-color .15s ease;
+}
+
+#gameOver .home-button:hover {
+    background:
+        rgba(110, 231, 255, .10);
+
+    border-color:
+        rgba(110, 231, 255, .30);
+
+    color: #9eeeff;
+
+    transform:
+        translateY(-1px);
+}
+
+#gameOver .home-button:active {
+    transform:
+        scale(.97);
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <canvas id="canvas"></canvas>
+
+    <div class="ui">
+
+        <div
+            class="score"
+            id="score"
+        >
+            0
+        </div>
+
+        <div class="best">
+            РЕКОРД<br>
+            <span id="best">0</span>
+        </div>
+
+    </div>
+
+
+    <!-- PAUSE BUTTON -->
+
+    <button
+        id="pauseButton"
+        aria-label="Пауза"
+    >
+        ⏸
+    </button>
+
+
+    <div id="combo">
+        +10
+    </div>
+
+    <div id="continueCountdown">
+        3
+    </div>
+
+
+    <!-- START / MAIN MENU -->
+
+    <div
+        class="screen"
+        id="startScreen"
+    >
+
+        <div class="panel">
+
+            <div class="game-sign">
+
+                <div class="sign-glow"></div>
+
+                <div class="sign-frame">
+
+                    <div class="sign-title">
+                        NEON
+                    </div>
+
+                    <div class="sign-name">
+                        CRASH
+                    </div>
+
+                </div>
+
+                <div class="sign-light light-left"></div>
+                <div class="sign-light light-right"></div>
+
+            </div>
+
+
+            <div class="description">
+                ЛОВИ РИТМ И НЕ ВРЕЗАЙСЯ
+            </div>
+
+
+            <button id="start">
+                ИГРАТЬ
+            </button>
+
+
+            <div class="menu-best">
+
+                РЕКОРД
+
+                <strong id="menuBest">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="hint">
+                ТАП / ПРОБЕЛ - СМЕНА НАПРАВЛЕНИЯ
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PAUSE MENU -->
+
+    <div
+        class="screen hidden"
+        id="pauseScreen"
+    >
+
+        <div class="panel">
+
+            <div class="pause-title">
+                ПАУЗА
+            </div>
+
+            <div class="pause-description">
+                Игра остановлена
+            </div>
+
+            <button
+                id="pauseResume"
+                class="pause-resume-button"
+            >
+                ВЕРНУТЬСЯ В ИГРУ
+            </button>
+
+            <button
+                id="pauseHome"
+                class="pause-home-button"
+            >
+                ДОМОЙ
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- GAME OVER -->
+
+    <div
+        class="screen hidden"
+        id="gameOver"
+    >
+
+        <div class="panel">
+
+            <div class="logo">
+                ПРОИГРАЛ
+            </div>
+
+            <div class="description">
+                Твой результат:
+            </div>
+
+            <div
+                class="final-score"
+                id="finalScore"
+            >
+                0
+            </div>
+
+
+            <button id="continue">
+                ПРОДОЛЖИТЬ ▶️
+            </button>
+
+            <button
+                id="restart"
+                class="restart-button"
+            >
+                ЗАНОВО
+            </button>
+
+            <button
+                id="home"
+                class="home-button"
+            >
+                ДОМОЙ
+            </button>
+
+
+            <div
+                class="hint"
+                id="gameOverHint"
+            >
+                Попробуй побить рекорд!
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+"use strict";
+
+
+/* =========================================================
+   ЗАЩИТА ИНТЕРФЕЙСА
+========================================================= */
+
+
+/* ================================
+   БЛОКИРОВКА ПКМ
+================================ */
+
+document.addEventListener(
+    "contextmenu",
+    function(event) {
+
+        event.preventDefault();
+
+        return false;
+    }
+);
+
+
+/* ================================
+   БЛОКИРОВКА КОПИРОВАНИЯ
+================================ */
+
+document.addEventListener(
+    "copy",
+    function(event) {
+
+        event.preventDefault();
+
+        return false;
+    }
+);
+
+
+/* ================================
+   БЛОКИРОВКА ВЫРЕЗАНИЯ
+================================ */
+
+document.addEventListener(
+    "cut",
+    function(event) {
+
+        event.preventDefault();
+
+        return false;
+    }
+);
+
+
+/* ================================
+   БЛОКИРОВКА DRAG
+================================ */
+
+document.addEventListener(
+    "dragstart",
+    function(event) {
+
+        event.preventDefault();
+
+        return false;
+    }
+);
+
+
+/* ================================
+   ДОПОЛНИТЕЛЬНАЯ БЛОКИРОВКА
+   Ctrl / Cmd + A / C / X / S / U
+================================ */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        const key =
+            event.key.toLowerCase();
+
+        const modifier =
+            event.ctrlKey ||
+            event.metaKey;
+
+
+        if (
+            modifier &&
+            (
+                key === "a" ||
+                key === "c" ||
+                key === "x" ||
+                key === "s" ||
+                key === "u"
+            )
+        ) {
+
+            event.preventDefault();
+
+            return;
+        }
+
+
+        /*
+            На ПК разрешаем игровое управление
+            только через пробел.
+        */
+
+        if (
+            event.code === "Space"
+        ) {
+
+            event.preventDefault();
+
+            turn();
+
+            return;
+        }
+
+
+        /*
+            Блокируем стрелки.
+        */
+
+        if (
+            event.code === "ArrowLeft" ||
+            event.code === "ArrowRight" ||
+            event.code === "ArrowUp" ||
+            event.code === "ArrowDown"
+        ) {
+
+            event.preventDefault();
+
+            return;
+        }
+    }
+);
+
+
+/* ================================
+   TOUCH / POINTER PROTECTION
+================================ */
+
+document.addEventListener(
+    "selectstart",
+    function(event) {
+
+        event.preventDefault();
+
+        return false;
+    }
+);
+
+
+/* ===================================
+   CANVAS
+=================================== */
+
+const game =
+    document.getElementById("game");
+
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+let width = 0;
+let height = 0;
+let scale = 1;
+
+
+function resize() {
+
+    width =
+        game.clientWidth;
+
+    height =
+        game.clientHeight;
+
+    scale =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+    canvas.width =
+        width * scale;
+
+    canvas.height =
+        height * scale;
+
+    ctx.setTransform(
+        scale,
+        0,
+        0,
+        scale,
+        0,
+        0
+    );
+}
+
+
+resize();
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
+/* ===================================
+   UI
+=================================== */
+
+const scoreElement =
+    document.getElementById("score");
+
+const bestElement =
+    document.getElementById("best");
+
+const startScreen =
+    document.getElementById("startScreen");
+
+const gameOverScreen =
+    document.getElementById("gameOver");
+
+const pauseScreen =
+    document.getElementById("pauseScreen");
+
+const pauseButton =
+    document.getElementById("pauseButton");
+
+const pauseResumeButton =
+    document.getElementById("pauseResume");
+
+const pauseHomeButton =
+    document.getElementById("pauseHome");
+
+const finalScore =
+    document.getElementById("finalScore");
+
+const gameOverHint =
+    document.getElementById("gameOverHint");
+
+const combo =
+    document.getElementById("combo");
+
+const continueCountdownElement =
+    document.getElementById(
+        "continueCountdown"
+    );
+
+
+let best =
+    Number(
+        localStorage.getItem(
+            "dontCrashBest2"
+        ) || 0
+    );
+
+bestElement.textContent =
+    best;
+
+const menuBest =
+    document.getElementById("menuBest");
+
+menuBest.textContent =
+    best;
+
+
+/* ===================================
+   GAME STATE
+=================================== */
+
+let playing = false;
+
+let paused = false;
+
+let externalPause = false;
+
+let menuCollectEffects = [];
+
+let continueUsed = false;
+
+let continueAdBusy = false;
+
+let countdownActive = false;
+
+let countdownToken = 0;
+
+let countdownTimer = null;
+
+let countdownPhase = 0;
+
+let countdownNextAt = 0;
+
+let countdownPausedRemaining = 0;
+
+let playerCollectPulse = 0;
+
+let continueBoost = 0;
+
+let score = 0;
+
+
+let distanceTravelled = 0;
+
+let nextSpeedMilestone = 75;
+
+const SPEED_INCREASE_PER_100M = 0.05;
+
+const MAX_PLAYER_SPEED = 8.45;
+
+
+let playerX = 0;
+
+let playerY = 0;
+
+let direction = 1;
+
+let playerSpeed = 1.5;
+
+let walls = [];
+
+let diamonds = [];
+
+let particles = [];
+
+let gameTime = 0;
+
+let lastFrame = 0;
+
+let wallTimer = 0;
+
+let diamondTimer = 0;
+
+let animation = 0;
+
+let safeTime = 0;
+
+let menuAnimation = 0;
+
+let menuLastFrame = 0;
+
+let menuTime = 0;
+
+let menuWalls = [];
+
+let menuDiamonds = [];
+
+
+/* ===================================
+   YANDEX GAMES — Обычная реклама
+=================================== */
+
+/*
+    Показывает обычную полноэкранную рекламу
+    Яндекс Игр.
+
+    Это НЕ rewarded-реклама.
+
+    После закрытия рекламы вызывается callback,
+    который передаётся в функцию.
+
+    Если SDK ещё не инициализирован или
+    реклама не может быть показана,
+    действие всё равно продолжается.
+*/
+
+async function showFullscreenAdAndThen(callback) {
+    let callbackCalled = false;
+
+    function finish() {
+        if (callbackCalled) return;
+        callbackCalled = true;
+
+        if (typeof callback === "function") {
+            callback();
+        }
+    }
+
+    try {
+        if (!vkSDKReady || !window.vkBridge) {
+            console.warn("VK Bridge недоступен");
+            return;
+        }
+
+        const result = await window.vkBridge.send(
+            "VKWebAppShowNativeAds",
+            {
+                ad_format: "interstitial"
+            }
+        );
+
+        console.log("VK interstitial result:", result);
+    } catch (error) {
+        console.warn(
+            "Полноэкранная реклама не показана:",
+            error
+        );
+    } finally {
+        finish();
+    }
+}
+
+
+
+
+/*
+    Яндекс может не показать рекламу, например,
+    из-за ограничения частоты показов.
+
+    В таком случае onClose вызывается с
+    wasShown = false, и пользователь всё равно
+    возвращается домой.
+
+    Это нормальное поведение API.
+*/
+
+
+/* ===================================
+   YANDEX GAMES — Rewarded реклама
+=================================== */
+
+/*
+    Rewarded-реклама для кнопки "ПРОДОЛЖИТЬ".
+
+    ВАЖНО:
+
+    Игра продолжается ТОЛЬКО если был вызван
+    callback onRewarded.
+
+    Если пользователь закрыл рекламу раньше
+    получения награды, onRewarded не вызывается,
+    поэтому continueGame() НЕ запускается.
+
+    Если SDK недоступен или произошла ошибка,
+    продолжение также НЕ выполняется.
+*/
+
+async function showRewardedAdAndThen() {
+    try {
+        if (!vkSDKReady || !window.vkBridge) {
+            console.warn("VK Bridge недоступен");
+            return false;
+        }
+
+        const result = await window.vkBridge.send(
+            "VKWebAppShowNativeAds",
+            {
+                ad_format: "reward"
+            }
+        );
+
+        console.log("VK rewarded result:", result);
+
+        // Продолжаем игру только при подтверждённой награде.
+        return result?.result === true;
+    } catch (error) {
+        console.warn(
+            "Rewarded-реклама недоступна или отменена:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+
+
+/* ===================================
+   MENU PREVIEW
+=================================== */
+
+function createMenuWall() {
+
+    const gap =
+        145 +
+        Math.sin(menuTime * 0.001) * 20;
+
+    const center =
+        width / 2 +
+        Math.sin(menuTime * 0.0007) * 65;
+
+    menuWalls.push({
+
+        y: -30,
+
+        height: 28,
+
+        left:
+            center -
+            gap / 2,
+
+        right:
+            center +
+            gap / 2
+    });
+
+
+    if (
+        Math.random() < .7
+    ) {
+
+        menuDiamonds.push({
+
+            x:
+                center +
+                (
+                    Math.random() - .5
+                ) *
+                (gap - 35),
+
+            y: 0,
+
+            size:
+                7 +
+                Math.random() * 3,
+
+            rotation:
+                Math.random(),
+
+            type:
+                Math.random() < .8
+                    ? "normal"
+                    : "rare"
+        });
+    }
+}
+
+
+function updateMenuPreview(delta) {
+
+    menuTime += delta;
+
+
+    if (
+        menuWalls.length === 0 ||
+        menuWalls[menuWalls.length - 1].y > 95
+    ) {
+
+        createMenuWall();
+    }
+
+
+    const speed = 1.25;
+
+    for (
+        let i = menuWalls.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const wall =
+            menuWalls[i];
+
+        wall.y +=
+            speed *
+            delta /
+            16.666;
+
+
+        if (
+            wall.y >
+            height + 60
+        ) {
+
+            menuWalls.splice(
+                i,
+                1
+            );
+        }
+    }
+
+
+    for (
+        let i = menuDiamonds.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const d =
+            menuDiamonds[i];
+
+        d.y +=
+            speed *
+            delta /
+            16.666;
+
+        d.rotation +=
+            .025 *
+            delta /
+            16.666;
+
+
+        if (
+            d.y >
+            height + 40
+        ) {
+
+            menuDiamonds.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+function collectMenuDiamonds() {
+
+    const player =
+        getMenuPlayerPosition();
+
+    for (
+        let i = menuDiamonds.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const d =
+            menuDiamonds[i];
+
+        const dx =
+            player.x - d.x;
+
+        const dy =
+            player.y - d.y;
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+
+        if (distance < 22) {
+
+            createMenuCrystalEffect(
+                d.x,
+                d.y,
+                d.type
+            );
+
+
+            menuDiamonds.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+function updateMenuCollectEffects(delta) {
+
+    const frame =
+        delta / 16.666;
+
+    for (
+        let i = menuCollectEffects.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const p =
+            menuCollectEffects[i];
+
+
+        if (!p.ring) {
+
+            p.x +=
+                p.vx * frame;
+
+            p.y +=
+                p.vy * frame;
+
+            p.vy +=
+                0.08 * frame;
+        }
+
+
+        p.life -=
+            0.045 * frame;
+
+
+        if (p.life <= 0) {
+
+            menuCollectEffects.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+function drawMenuCollectEffects() {
+
+    for (
+        const p of menuCollectEffects
+    ) {
+
+        ctx.save();
+
+        ctx.globalAlpha =
+            Math.max(0, p.life);
+
+        ctx.shadowColor =
+            p.color;
+
+        ctx.shadowBlur =
+            18;
+
+        if (p.ring) {
+
+            const radius =
+                p.size +
+                (1 - p.life) * 35;
+
+            ctx.strokeStyle =
+                p.color;
+
+            ctx.lineWidth =
+                2.5 * p.life;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                radius,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.stroke();
+
+        } else {
+
+            ctx.fillStyle =
+                p.color;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                1.5 +
+                p.life * 2.5,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+        }
+
+        ctx.restore();
+    }
+}
+
+
+function createMenuCrystalEffect(
+    x,
+    y,
+    type = "normal"
+) {
+
+    let color = "#6ee7ff";
+
+    if (type === "rare") {
+        color = "#c77dff";
+    }
+
+    if (type === "super") {
+        color = "#ff9f43";
+    }
+
+
+    menuCollectEffects.push({
+
+        x: x,
+        y: y,
+
+        life: 1,
+
+        color: color,
+
+        ring: true,
+
+        size: 5
+    });
+
+
+    for (let i = 0; i < 12; i++) {
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+        const speed =
+            1.5 +
+            Math.random() * 3;
+
+
+        menuCollectEffects.push({
+
+            x: x,
+            y: y,
+
+            vx:
+                Math.cos(angle) *
+                speed,
+
+            vy:
+                Math.sin(angle) *
+                speed,
+
+            life: 1,
+
+            color: color
+        });
+    }
+}
+
+
+function drawMenuPreview() {
+
+    for (
+        const wall of menuWalls
+    ) {
+
+        const gradient =
+            ctx.createLinearGradient(
+                0,
+                wall.y,
+                0,
+                wall.y + wall.height
+            );
+
+
+        gradient.addColorStop(
+            0,
+            "#ff5c8a"
+        );
+
+        gradient.addColorStop(
+            .5,
+            "#ff315f"
+        );
+
+        gradient.addColorStop(
+            1,
+            "#9d35ff"
+        );
+
+
+        ctx.shadowColor =
+            "#ff3d81";
+
+        ctx.shadowBlur =
+            18;
+
+        ctx.fillStyle =
+            gradient;
+
+
+        ctx.fillRect(
+            0,
+            wall.y,
+            Math.max(
+                0,
+                wall.left
+            ),
+            wall.height
+        );
+
+
+        ctx.fillRect(
+            wall.right,
+            wall.y,
+            Math.max(
+                0,
+                width - wall.right
+            ),
+            wall.height
+        );
+
+
+        ctx.shadowBlur = 0;
+
+
+        ctx.fillStyle =
+            "rgba(255,255,255,.28)";
+
+
+        ctx.fillRect(
+            0,
+            wall.y,
+            Math.max(
+                0,
+                wall.left
+            ),
+            2
+        );
+
+
+        ctx.fillRect(
+            wall.right,
+            wall.y,
+            Math.max(
+                0,
+                width - wall.right
+            ),
+            2
+        );
+    }
+
+
+    for (
+        const d of menuDiamonds
+    ) {
+
+        ctx.save();
+
+        ctx.translate(
+            d.x,
+            d.y
+        );
+
+        ctx.rotate(
+            d.rotation
+        );
+
+
+        const color =
+            d.type === "rare"
+                ? "#c77dff"
+                : "#6ee7ff";
+
+
+        ctx.shadowColor =
+            color;
+
+        ctx.shadowBlur =
+            18;
+
+        ctx.fillStyle =
+            color;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            -d.size
+        );
+
+        ctx.lineTo(
+            d.size,
+            0
+        );
+
+        ctx.lineTo(
+            0,
+            d.size
+        );
+
+        ctx.lineTo(
+            -d.size,
+            0
+        );
+
+        ctx.closePath();
+
+        ctx.fill();
+
+
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle =
+            "rgba(255,255,255,.65)";
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            -d.size * .25,
+            -d.size * .25,
+            1.3,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        ctx.restore();
+    }
+}
+
+
+let menuPlayerX = 0;
+
+let menuPlayerY = 0;
+
+let menuPlayerTargetX = 0;
+
+
+function getMenuPlayerPosition() {
+
+    const targetY =
+        height * 0.70 +
+        Math.sin(menuTime * 0.002) * 14;
+
+
+    let nearestWall = null;
+
+    let nearestDistance = Infinity;
+
+
+    for (const wall of menuWalls) {
+
+        const wallCenter =
+            wall.y +
+            wall.height / 2;
+
+        const distance =
+            Math.abs(
+                wallCenter -
+                targetY
+            );
+
+        if (
+            distance < 110 &&
+            distance < nearestDistance
+        ) {
+
+            nearestDistance =
+                distance;
+
+            nearestWall =
+                wall;
+        }
+    }
+
+
+    if (!nearestWall) {
+
+        menuPlayerTargetX =
+            width / 2 +
+            Math.sin(
+                menuTime * 0.001
+            ) * 45;
+    }
+
+    else {
+
+        const gapCenter =
+            (
+                nearestWall.left +
+                nearestWall.right
+            ) / 2;
+
+        const gapHalf =
+            (
+                nearestWall.right -
+                nearestWall.left
+            ) / 2;
+
+
+        const movement =
+            Math.min(
+                30,
+                Math.max(
+                    8,
+                    gapHalf - 20
+                )
+            );
+
+
+        menuPlayerTargetX =
+            gapCenter +
+            Math.sin(
+                menuTime * 0.001
+            ) *
+            movement;
+    }
+
+
+    if (
+        menuPlayerX === 0
+    ) {
+
+        menuPlayerX =
+            width / 2;
+
+        menuPlayerTargetX =
+            width / 2;
+    }
+
+
+    const difference =
+        menuPlayerTargetX -
+        menuPlayerX;
+
+
+    menuPlayerX +=
+        difference *
+        0.035;
+
+
+    menuPlayerY =
+        targetY;
+
+
+    return {
+        x: menuPlayerX,
+        y: menuPlayerY
+    };
+}
+
+
+function drawMenuPlayer() {
+
+    const position =
+        getMenuPlayerPosition();
+
+    const x =
+        position.x;
+
+    const y =
+        position.y;
+
+
+    const pulse =
+        Math.sin(
+            menuTime * 0.006
+        ) * 1.5;
+
+
+    const radius =
+        11 +
+        pulse;
+
+
+    ctx.save();
+
+
+    ctx.shadowColor =
+        "#38e8ff";
+
+    ctx.shadowBlur =
+        30;
+
+
+    ctx.fillStyle =
+        "rgba(70,220,255,.12)";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        radius + 10,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    const gradient =
+        ctx.createRadialGradient(
+            x - 4,
+            y - 5,
+            1,
+            x,
+            y,
+            radius
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#ffffff"
+    );
+
+    gradient.addColorStop(
+        .25,
+        "#d8fbff"
+    );
+
+    gradient.addColorStop(
+        .55,
+        "#52eaff"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#3867ff"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.shadowBlur = 0;
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.9)";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x - 4,
+        y - 5,
+        2.5,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.restore();
+}
+
+
+function menuLoop(timestamp) {
+
+    const delta =
+        menuLastFrame
+            ? timestamp - menuLastFrame
+            : 16.666;
+
+    menuLastFrame =
+        timestamp;
+
+
+    if (
+        startScreen.classList.contains(
+            "hidden"
+        )
+    ) {
+
+        menuAnimation = 0;
+
+        return;
+    }
+
+
+    const safeDelta =
+        Math.min(delta, 40);
+
+
+    updateMenuPreview(
+        safeDelta
+    );
+
+
+    collectMenuDiamonds();
+
+
+    updateMenuCollectEffects(
+        safeDelta
+    );
+
+
+    drawBackground();
+
+    drawMenuPreview();
+
+    drawMenuCollectEffects();
+
+    drawMenuPlayer();
+
+
+    menuAnimation =
+        requestAnimationFrame(
+            menuLoop
+        );
+}
+
+
+/* ===================================
+   RESET
+=================================== */
+
+function resetGame() {
+
+    countdownActive = false;
+
+    countdownToken++;
+
+    clearTimeout(countdownTimer);
+
+    countdownTimer = null;
+
+    countdownPhase = 0;
+
+    countdownNextAt = 0;
+
+    countdownPausedRemaining = 0;
+	
+	countdownPausedByVisibility = false;
+
+    paused = false;
+
+    externalPause = false;
+
+
+    pauseScreen.classList.add(
+        "hidden"
+    );
+
+
+    game.classList.remove(
+        "countdown-active"
+    );
+
+
+    score = 0;
+
+
+    distanceTravelled = 0;
+
+    nextSpeedMilestone = 75;
+
+
+    gameTime = 0;
+
+    continueBoost = 0;
+
+    continueUsed = false;
+
+
+    playerX =
+        width / 2;
+
+    playerY =
+        height * 0.72;
+
+    direction = 1;
+
+    playerSpeed = 2.7;
+
+    walls = [];
+
+    diamonds = [];
+
+    particles = [];
+
+    safeTime = 1500;
+
+    wallTimer = 2500;
+
+    diamondTimer = 1000;
+
+
+    window.wallDirection =
+        Math.random() < 0.5
+            ? -1
+            : 1;
+
+
+    scoreElement.textContent =
+        "0";
+}
+
+
+/* ===================================
+   COUNTDOWN
+   Пауза здесь сделана через сохранение
+   оставшегося времени текущей фазы.
+=================================== */
+
+function clearCountdownTimer() {
+
+    if (countdownTimer !== null) {
+
+        clearTimeout(
+            countdownTimer
+        );
+
+        countdownTimer = null;
+    }
+}
+
+
+function showCountdown(number) {
+
+    continueCountdownElement.textContent =
+        number;
+
+    continueCountdownElement.classList.remove(
+        "show"
+    );
+
+
+    requestAnimationFrame(() => {
+
+        if (
+            countdownActive
+        ) {
+
+            continueCountdownElement.classList.add(
+                "show"
+            );
+        }
+
+    });
+
+
+    clearTimeout(
+        showCountdown.hideTimer
+    );
+
+
+    showCountdown.hideTimer =
+        setTimeout(() => {
+
+            if (
+                countdownActive
+            ) {
+
+                continueCountdownElement.classList.remove(
+                    "show"
+                );
+            }
+
+        }, 750);
+}
+
+
+function scheduleCountdownStep(delay) {
+
+    clearCountdownTimer();
+
+
+    countdownNextAt =
+        performance.now() +
+        delay;
+
+
+    countdownTimer =
+        setTimeout(
+            countdownStep,
+            delay
+        );
+}
+
+
+function countdownStep() {
+
+    countdownTimer = null;
+
+
+    if (
+        !playing ||
+        paused ||
+        !countdownActive
+    ) {
+
+        return;
+    }
+
+
+    if (
+        countdownPhase === 3
+    ) {
+
+        countdownPhase = 2;
+
+        showCountdown(2);
+
+        scheduleCountdownStep(1000);
+
+        return;
+    }
+
+
+    if (
+        countdownPhase === 2
+    ) {
+
+        countdownPhase = 1;
+
+        showCountdown(1);
+
+        scheduleCountdownStep(1000);
+
+        return;
+    }
+
+
+    if (
+        countdownPhase === 1
+    ) {
+
+        countdownPhase = 0;
+
+
+        continueCountdownElement.textContent =
+            "НАЧАЛИ!";
+
+        continueCountdownElement.classList.add(
+            "show"
+        );
+
+
+        scheduleCountdownStep(500);
+
+        return;
+    }
+
+
+    continueCountdownElement.classList.remove(
+        "show"
+    );
+
+    countdownActive = false;
+
+    countdownPausedRemaining = 0;
+
+    countdownNextAt = 0;
+
+
+    /*
+        Отсчёт закончился —
+        кнопка паузы снова доступна.
+    */
+
+    game.classList.remove(
+        "countdown-active"
+    );
+}
+
+
+function startCountdown() {
+
+    countdownToken++;
+
+
+    const token =
+        countdownToken;
+
+
+    clearCountdownTimer();
+
+
+    countdownActive = true;
+
+    countdownPhase = 3;
+
+    countdownPausedRemaining = 0;
+
+
+    /*
+        Пока идёт отсчёт,
+        кнопка паузы скрыта.
+    */
+
+    game.classList.add(
+        "countdown-active"
+    );
+
+
+    showCountdown(3);
+
+
+    countdownNextAt =
+        performance.now() +
+        1000;
+
+
+    countdownTimer =
+        setTimeout(
+            function() {
+
+                if (
+                    token !==
+                    countdownToken
+                ) {
+
+                    return;
+                }
+
+                countdownStep();
+
+            },
+            1000
+        );
+}
+
+
+function pauseCountdown() {
+
+    if (
+        !countdownActive
+    ) {
+
+        return;
+    }
+
+
+    if (
+        countdownTimer !== null
+    ) {
+
+        countdownPausedRemaining =
+            Math.max(
+                0,
+                countdownNextAt -
+                performance.now()
+            );
+
+    } else {
+
+        countdownPausedRemaining =
+            0;
+    }
+
+
+    clearCountdownTimer();
+
+
+    continueCountdownElement.classList.remove(
+        "show"
+    );
+}
+
+
+function resumeCountdown() {
+
+    if (
+        !countdownActive ||
+        !playing
+    ) {
+
+        return;
+    }
+
+
+    const remaining =
+        countdownPausedRemaining > 0
+            ? countdownPausedRemaining
+            : 1000;
+
+
+    countdownPausedRemaining = 0;
+
+
+    /*
+        Пока продолжается отсчёт,
+        кнопка паузы остаётся скрытой.
+    */
+
+    game.classList.add(
+        "countdown-active"
+    );
+
+
+    if (
+        countdownPhase === 3
+    ) {
+
+        showCountdown(3);
+
+    } else if (
+        countdownPhase === 2
+    ) {
+
+        showCountdown(2);
+
+    } else if (
+        countdownPhase === 1
+    ) {
+
+        showCountdown(1);
+
+    } else {
+
+        continueCountdownElement.textContent =
+            "НАЧАЛИ!";
+
+        continueCountdownElement.classList.add(
+            "show"
+        );
+    }
+
+
+    countdownNextAt =
+        performance.now() +
+        remaining;
+
+
+    countdownTimer =
+        setTimeout(
+            countdownStep,
+            remaining
+        );
+}
+
+
+/* ===================================
+   PAUSE
+=================================== */
+
+function pauseGame(reason = "manual") {
+
+    if (!playing || paused) {
+        return;
+    }
+
+    // Во время обратного отсчёта ручная пауза недоступна.
+    if (
+        countdownActive &&
+        reason !== "visibility" &&
+        reason !== "sdk"
+    ) {
+        return;
+    }
+
+    // Если вкладка скрылась во время countdown,
+    // останавливаем таймер без открытия меню паузы.
+    if (
+        countdownActive &&
+        reason === "visibility"
+    ) {
+        pauseCountdown();
+        return;
+    }
+
+    paused = true;
+
+    if (countdownActive) {
+        pauseCountdown();
+    }
+
+    pauseButton.style.display = "none";
+
+    pauseScreen.classList.remove("hidden");
+
+    lastFrame = performance.now();
+
+    // Переключение вкладки не должно автоматически
+    // снимать паузу при возвращении.
+    externalPause = reason === "sdk";
+}
+
+
+
+function resumeGame() {
+
+    if (!playing || !paused) {
+        return;
+    }
+
+    paused = false;
+    externalPause = false;
+
+    pauseScreen.classList.add("hidden");
+
+    pauseButton.style.display = "";
+
+    lastFrame = performance.now();
+
+    if (countdownActive) {
+        // Если отсчёт был прерван внешним событием,
+        // продолжаем его с сохранённого времени.
+        resumeCountdown();
+    } else {
+        // При ручном возобновлении игры сохраняем
+        // прежнее поведение с отсчётом 3, 2, 1.
+        startCountdown();
+    }
+
+    if (!animation) {
+        animation = requestAnimationFrame(loop);
+    }
+}
+
+
+
+
+/* ===================================
+   EXTERNAL PAUSE / RESUME
+=================================== */
+
+function handleExternalPause(
+    source = "sdk"
+) {
+
+    if (
+        playing
+    ) {
+
+        pauseGame(source);
+    }
+}
+
+
+function handleExternalResume(
+    source = "sdk"
+) {
+
+    if (
+        playing &&
+        paused &&
+        externalPause
+    ) {
+
+        resumeGame();
+    }
+}
+
+
+/* ===================================
+   VISIBILITY CHANGE
+=================================== */
+
+let countdownPausedByVisibility = false;
+
+document.addEventListener("visibilitychange", function() {
+
+    if (document.hidden) {
+
+        if (!playing) {
+            return;
+        }
+
+        if (countdownActive) {
+
+            // Во время отсчёта не открываем меню паузы.
+            // Запоминаем оставшееся время и останавливаем таймер.
+            pauseCountdown();
+
+            countdownPausedByVisibility = true;
+
+            return;
+        }
+
+        // Во время обычной игры открываем меню паузы.
+        // При возвращении оно останется открытым.
+        pauseGame("visibility");
+
+        return;
+    }
+
+    // Вкладка снова активна.
+    if (
+        playing &&
+        countdownPausedByVisibility &&
+        countdownActive &&
+        !paused
+    ) {
+
+        countdownPausedByVisibility = false;
+
+        lastFrame = performance.now();
+
+        resumeCountdown();
+    }
+});
+
+
+/* ===================================
+   START
+=================================== */
+
+function startGame() {
+
+    if (menuAnimation) {
+
+        cancelAnimationFrame(
+            menuAnimation
+        );
+
+        menuAnimation = 0;
+    }
+
+
+    cancelAnimationFrame(animation);
+
+    countdownToken++;
+
+    clearCountdownTimer();
+
+    resetGame();
+
+    /*
+        ИСПРАВЛЕНИЕ:
+        После выхода домой через меню паузы
+        pauseButton мог остаться со style.display="none".
+
+        Принудительно возвращаем стандартное отображение.
+    */
+
+    pauseButton.style.display = "";
+
+
+    startScreen.classList.add("hidden");
+
+    gameOverScreen.classList.add("hidden");
+
+    pauseScreen.classList.add("hidden");
+
+    game.classList.remove("menu-active");
+
+    playing = true;
+
+    paused = false;
+
+    externalPause = false;
+
+    countdownActive = true;
+
+    lastFrame = performance.now();
+
+    startCountdown();
+
+    animation =
+        requestAnimationFrame(
+            loop
+        );
+}
+
+
+/* ===================================
+   CONTINUE
+=================================== */
+
+/*
+    Запуск продолжения игры после успешного
+    получения Rewarded-награды.
+
+    Эта функция вызывается ТОЛЬКО после
+    onRewarded + onClose.
+*/
+
+function continueGame() {
+
+    if (
+        continueUsed ||
+        playing ||
+        continueAdBusy
+    ) {
+        return;
+    }
+
+
+    continueUsed = true;
+
+
+    document
+        .getElementById("continue")
+        .classList.add("used");
+
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+
+    playerX =
+        width / 2;
+
+    playerY =
+        height * 0.72;
+
+    direction = 1;
+
+
+    walls =
+        walls.filter(
+            wall =>
+                wall.y <
+                playerY - 120
+        );
+
+
+    diamonds =
+        diamonds.filter(
+            d =>
+                d.y <
+                playerY - 100
+        );
+
+
+    particles = [];
+
+
+    playing = true;
+
+    paused = false;
+
+    externalPause = false;
+
+    countdownActive = true;
+
+    continueBoost = 3000;
+
+    lastFrame =
+        performance.now();
+
+
+    startCountdown();
+
+
+    animation =
+        requestAnimationFrame(
+            loop
+        );
+}
+
+
+/*
+    Запуск Rewarded-рекламы перед продолжением.
+
+    ВАЖНО:
+    Если игрок закрыл рекламу без награды,
+    continueGame() не вызывается и экран
+    проигрыша остаётся открытым.
+*/
+
+async function continueWithRewardedAd() {
+    if (
+        continueUsed ||
+        playing ||
+        continueAdBusy
+    ) {
+        return;
+    }
+
+    continueAdBusy = true;
+
+    try {
+        const rewarded =
+            await showRewardedAdAndThen();
+
+        if (rewarded) {
+            continueGame();
+        } else {
+            console.log(
+                "Продолжение отменено: награда не получена"
+            );
+        }
+    } finally {
+        continueAdBusy = false;
+    }
+}
+
+
+/* ===================================
+   HOME
+=================================== */
+
+function goHome() {
+
+    playing = false;
+
+    paused = false;
+
+    externalPause = false;
+
+    countdownActive = false;
+
+    countdownToken++;
+
+    clearCountdownTimer();
+
+    continueBoost = 0;
+
+    continueAdBusy = false;
+
+
+    cancelAnimationFrame(
+        animation
+    );
+
+
+    pauseScreen.classList.add(
+        "hidden"
+    );
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+
+    startScreen.classList.remove(
+        "hidden"
+    );
+
+
+    game.classList.add(
+        "menu-active"
+    );
+
+    game.classList.remove(
+        "countdown-active"
+    );
+
+
+    /*
+        ИСПРАВЛЕНИЕ БАГА:
+
+        При нажатии "ДОМОЙ" из меню паузы
+        pauseGame() устанавливал:
+
+            pauseButton.style.display = "none";
+
+        Из-за этого после новой игры кнопка
+        оставалась скрытой.
+
+        Возвращаем стандартное отображение
+        кнопки при каждом переходе домой.
+    */
+
+    pauseButton.style.display = "";
+
+
+    walls = [];
+
+    diamonds = [];
+
+    particles = [];
+
+    score = 0;
+
+    distanceTravelled = 0;
+
+    nextSpeedMilestone = 75;
+
+    scoreElement.textContent =
+        "0";
+
+
+    playerX =
+        width / 2;
+
+    playerY =
+        height * 0.72;
+
+    direction = 1;
+
+
+    menuWalls = [];
+
+    menuDiamonds = [];
+
+    menuCollectEffects = [];
+
+    menuPlayerX =
+        width / 2;
+
+    menuPlayerY =
+        height * 0.70;
+
+    menuPlayerTargetX =
+        width / 2;
+
+    menuTime = 0;
+
+    menuLastFrame =
+        performance.now();
+
+
+    if (!menuAnimation) {
+
+        menuAnimation =
+            requestAnimationFrame(
+                menuLoop
+            );
+    }
+}
+
+
+/* ===================================
+   HOME WITH AD
+=================================== */
+
+/*
+    Эта функция используется только для двух
+    кнопок "ДОМОЙ":
+
+    1. ДОМОЙ на экране проигрыша.
+    2. ДОМОЙ в меню паузы.
+
+    Сначала вызывается обычная fullscreen-реклама,
+    затем после её закрытия выполняется goHome().
+*/
+
+function goHomeWithAd() {
+
+    /*
+        Не даём пользователю случайно запустить
+        несколько переходов домой подряд.
+    */
+
+    if (
+        goHomeWithAd.busy
+    ) {
+
+        return;
+    }
+
+
+    goHomeWithAd.busy = true;
+
+
+    showFullscreenAdAndThen(
+        function() {
+
+            goHomeWithAd.busy = false;
+
+            goHome();
+        }
+    );
+}
+
+
+/* ===================================
+   GAME OVER
+=================================== */
+
+function finishGame() {
+
+    if (!playing) {
+        return;
+    }
+
+
+    playing = false;
+
+    paused = false;
+
+    externalPause = false;
+
+    countdownActive = false;
+
+    countdownToken++;
+
+    clearCountdownTimer();
+
+    pauseScreen.classList.add(
+        "hidden"
+    );
+
+    game.classList.remove(
+        "countdown-active"
+    );
+
+
+    finalScore.textContent =
+        score;
+
+
+    const isNewRecord =
+        score > best;
+
+
+    if (isNewRecord) {
+
+        best = score;
+
+        localStorage.setItem(
+            "dontCrashBest2",
+            String(best)
+        );
+    }
+
+
+    bestElement.textContent =
+        best;
+
+    menuBest.textContent =
+        best;
+
+
+    gameOverHint.classList.remove(
+        "new-record"
+    );
+
+
+    if (isNewRecord) {
+
+        gameOverHint.textContent =
+            "Новый рекорд!";
+
+        gameOverHint.classList.add(
+            "new-record"
+        );
+
+    } else {
+
+        gameOverHint.textContent =
+            "Попробуй побить рекорд!";
+    }
+
+
+    createExplosion(
+        playerX,
+        playerY
+    );
+
+
+    draw();
+
+
+    gameOverScreen.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* ===================================
+   CHANGE DIRECTION
+=================================== */
+
+function turn() {
+
+    if (
+        !playing ||
+        paused
+    ) {
+        return;
+    }
+
+
+    /*
+        Во время countdown направление
+        также не меняем.
+    */
+
+    if (
+        countdownActive
+    ) {
+
+        return;
+    }
+
+
+    direction *= -1;
+
+
+    for(let i = 0; i < 5; i++) {
+
+        particles.push({
+
+            x: playerX,
+
+            y: playerY,
+
+            vx:
+                (Math.random() - .5) * 3,
+
+            vy:
+                (Math.random() - .5) * 3,
+
+            life: 1,
+
+            color: "#6ee7ff"
+        });
+    }
+
+
+    particles.push({
+
+        x: playerX,
+
+        y: playerY,
+
+        vx:
+            (Math.random() - .5) * 3,
+
+        vy:
+            (Math.random() - .5) * 3,
+
+        life: 1,
+
+        color: "#6ee7ff"
+    });
+}
+
+
+/* ===================================
+   CREATE WALL
+=================================== */
+
+function createWall() {
+
+    const gap =
+        Math.max(
+            135,
+            200 -
+            gameTime * 0.006
+        );
+
+    const margin = 25;
+
+
+    let center;
+
+
+    if (walls.length === 0) {
+
+        center =
+            width / 2;
+
+    } else {
+
+        const previous =
+            walls[walls.length - 1];
+
+
+        const previousCenter =
+            previous.currentCenterX !== undefined
+                ? previous.currentCenterX
+                : (
+                    previous.left +
+                    previous.right
+                ) / 2;
+
+
+        if (
+            typeof window.wallDirection ===
+            "undefined"
+        ) {
+
+            window.wallDirection =
+                Math.random() < 0.5
+                    ? -1
+                    : 1;
+        }
+
+
+        if (
+            Math.random() < 0.18
+        ) {
+
+            window.wallDirection *= -1;
+        }
+
+
+        const maxShift =
+            Math.min(
+                75,
+                45 +
+                gameTime * 0.02
+            );
+
+
+        const shift =
+            (
+                0.65 +
+                Math.random() * 0.35
+            ) *
+            maxShift *
+            window.wallDirection;
+
+
+        center =
+            previousCenter +
+            shift;
+
+
+        const minCenter =
+            margin +
+            gap / 2;
+
+        const maxCenter =
+            width -
+            margin -
+            gap / 2;
+
+
+        if (
+            center <= minCenter
+        ) {
+
+            center =
+                minCenter;
+
+            window.wallDirection =
+                1;
+        }
+
+
+        if (
+            center >= maxCenter
+        ) {
+
+            center =
+                maxCenter;
+
+            window.wallDirection =
+                -1;
+        }
+    }
+
+
+    const moving =
+        Math.random() < 0.30;
+
+
+    const moveAmplitude =
+        moving
+            ? 12 +
+              Math.random() * 18
+            : 0;
+
+
+    const moveFrequency =
+        moving
+            ? 0.0012 +
+              Math.random() * 0.001
+            : 0;
+
+
+    const movePhase =
+        Math.random() *
+        Math.PI *
+        2;
+
+
+    const wall = {
+
+        y: -35,
+
+        height: 30,
+
+        centerX:
+            center,
+
+        currentCenterX:
+            center,
+
+        gap:
+            gap,
+
+        left:
+            center -
+            gap / 2,
+
+        right:
+            center +
+            gap / 2,
+
+        moving:
+            moving,
+
+        moveAmplitude:
+            moveAmplitude,
+
+        moveFrequency:
+            moveFrequency,
+
+        movePhase:
+            movePhase,
+
+        passed:
+            false
+    };
+
+
+    walls.push(wall);
+
+
+    if (Math.random() < 0.75) {
+
+        const random =
+            Math.random();
+
+        let type;
+
+
+        if (random < 0.70) {
+
+            type = "normal";
+
+        } else if (random < 0.95) {
+
+            type = "rare";
+
+        } else {
+
+            type = "super";
+        }
+
+
+        diamonds.push({
+
+            x:
+                wall.left +
+                25 +
+                Math.random() *
+                Math.max(
+                    1,
+                    gap - 50
+                ),
+
+            y:
+                wall.y +
+                wall.height / 2,
+
+            size:
+                type === "super"
+                    ? 12
+                    : type === "rare"
+                        ? 10
+                        : 9,
+
+            rotation:
+                Math.random(),
+
+            type:
+                type
+        });
+    }
+}
+
+
+/* ===================================
+   COLLISION
+=================================== */
+
+function collision(
+    px,
+    py,
+    radius,
+    x,
+    y,
+    w,
+    h
+) {
+
+    if (
+        w <= 0 ||
+        h <= 0
+    ) {
+        return false;
+    }
+
+
+    const closestX =
+        Math.max(
+            x,
+            Math.min(
+                px,
+                x + w
+            )
+        );
+
+
+    const closestY =
+        Math.max(
+            y,
+            Math.min(
+                py,
+                y + h
+            )
+        );
+
+
+    const dx =
+        px - closestX;
+
+    const dy =
+        py - closestY;
+
+
+    return (
+        dx * dx +
+        dy * dy <
+        radius * radius
+    );
+}
+
+
+/* ===================================
+   UPDATE
+=================================== */
+
+function update(delta) {
+
+    delta =
+        Math.min(
+            delta,
+            40
+        );
+
+
+    const frame =
+        delta / 16.666;
+
+
+    playerCollectPulse =
+        Math.max(
+            0,
+            playerCollectPulse -
+            0.055 * frame
+        );
+
+
+    if (
+        countdownActive ||
+        paused
+    ) {
+        return;
+    }
+
+
+    gameTime += delta;
+
+    continueBoost =
+        Math.max(
+            0,
+            continueBoost - delta
+        );
+
+
+    safeTime =
+        Math.max(
+            0,
+            safeTime - delta
+        );
+
+
+    /* ===================================
+       PLAYER SPEED / DISTANCE
+    =================================== */
+
+    distanceTravelled +=
+        playerSpeed *
+        frame *
+        0.60;
+
+
+    while (
+        distanceTravelled >=
+        nextSpeedMilestone
+    ) {
+
+        nextSpeedMilestone += 75;
+
+
+        playerSpeed =
+            Math.min(
+                MAX_PLAYER_SPEED,
+                playerSpeed +
+                SPEED_INCREASE_PER_100M
+            );
+    }
+
+
+    const distanceSpeedBonus =
+        Math.min(
+            0.9,
+            distanceTravelled *
+            0.00018
+        );
+
+
+    const targetPlayerSpeed =
+        Math.min(
+            MAX_PLAYER_SPEED,
+            2.7 +
+            distanceSpeedBonus +
+            Math.floor(
+                distanceTravelled / 100
+            ) *
+            SPEED_INCREASE_PER_100M
+        );
+
+
+    playerSpeed +=
+        (
+            targetPlayerSpeed -
+            playerSpeed
+        ) *
+        0.015 *
+        frame;
+
+
+    playerSpeed =
+        Math.min(
+            MAX_PLAYER_SPEED,
+            playerSpeed
+        );
+
+
+    /* ================================
+       PLAYER
+    ================================= */
+
+    playerX +=
+        direction *
+        playerSpeed *
+        frame;
+
+
+    if (
+        playerX < 18
+    ) {
+
+        playerX = 18;
+
+        direction = 1;
+    }
+
+
+    if (
+        playerX >
+        width - 18
+    ) {
+
+        playerX =
+            width - 18;
+
+        direction = -1;
+    }
+
+
+    playerY =
+        height * 0.72 +
+        Math.sin(
+            gameTime * 0.004
+        ) * 18;
+
+
+    /* ================================
+       WALL SPAWN
+    ================================= */
+
+    wallTimer -= delta;
+
+
+    if (
+        wallTimer <= 0
+    ) {
+
+        createWall();
+
+
+        wallTimer =
+            Math.max(
+                850,
+                1500 -
+                gameTime * 0.025
+            );
+    }
+
+
+    /* ================================
+       WALL SPEED
+    ================================= */
+
+    let wallSpeed =
+        Math.min(
+            4.2,
+            2.0 +
+            distanceTravelled * 0.00075
+        );
+
+
+    if (continueBoost > 0) {
+
+        const progress =
+            1 -
+            continueBoost / 3000;
+
+
+        const smooth =
+            progress *
+            progress;
+
+
+        wallSpeed *=
+            0.35 +
+            smooth * 0.65;
+    }
+
+
+    /* ================================
+       WALLS
+    ================================= */
+
+    for(
+        let i =
+            walls.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const wall =
+            walls[i];
+
+
+        wall.y +=
+            wallSpeed *
+            frame;
+
+
+        if (wall.moving) {
+
+            const offset =
+                Math.sin(
+                    gameTime *
+                    wall.moveFrequency +
+                    wall.movePhase
+                ) *
+                wall.moveAmplitude;
+
+
+            wall.currentCenterX =
+                wall.centerX +
+                offset;
+
+
+            const minCenter =
+                25 +
+                wall.gap / 2;
+
+            const maxCenter =
+                width -
+                25 -
+                wall.gap / 2;
+
+
+            wall.currentCenterX =
+                Math.max(
+                    minCenter,
+                    Math.min(
+                        maxCenter,
+                        wall.currentCenterX
+                    )
+                );
+
+
+            wall.left =
+                wall.currentCenterX -
+                wall.gap / 2;
+
+            wall.right =
+                wall.currentCenterX +
+                wall.gap / 2;
+        }
+
+
+        const nearPlayer =
+            wall.y <
+            playerY + 30 &&
+            wall.y +
+            wall.height >
+            playerY - 30;
+
+
+        if (
+            safeTime <= 0 &&
+            nearPlayer
+        ) {
+
+            const hitLeft =
+                collision(
+                    playerX,
+                    playerY,
+                    10,
+
+                    0,
+                    wall.y,
+
+                    wall.left,
+                    wall.height
+                );
+
+
+            const hitRight =
+                collision(
+                    playerX,
+                    playerY,
+                    10,
+
+                    wall.right,
+                    wall.y,
+
+                    width -
+                    wall.right,
+                    wall.height
+                );
+
+
+            if (
+                hitLeft ||
+                hitRight
+            ) {
+
+                finishGame();
+
+                return;
+            }
+        }
+
+
+        if (
+            !wall.passed &&
+            wall.y >
+            playerY
+        ) {
+
+            wall.passed = true;
+
+            score++;
+
+            scoreElement.textContent =
+                score;
+
+
+            if (
+                score % 5 === 0
+            ) {
+
+                showCombo(
+                    "🔥 " +
+                    score
+                );
+            }
+        }
+
+
+        if (
+            wall.y >
+            height + 80
+        ) {
+
+            walls.splice(
+                i,
+                1
+            );
+        }
+    }
+
+
+    /* ================================
+       DIAMONDS
+    ================================= */
+
+    for(
+        let i =
+            diamonds.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const d =
+            diamonds[i];
+
+
+        d.y +=
+            wallSpeed *
+            frame;
+
+
+        d.rotation +=
+            0.05 *
+            frame;
+
+
+        const dx =
+            playerX -
+            d.x;
+
+        const dy =
+            playerY -
+            d.y;
+
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+
+        if (
+            distance <
+            20
+        ) {
+
+            let reward = 5;
+
+            let text = "+5 💎";
+
+
+            if (
+                d.type === "rare"
+            ) {
+
+                reward = 15;
+
+                text = "+15 💜";
+
+            } else if (
+                d.type === "super"
+            ) {
+
+                reward = 30;
+
+                text = "+30 🔥";
+            }
+
+
+            score += reward;
+
+
+            scoreElement.textContent =
+                score;
+
+
+            showCombo(
+                text
+            );
+
+
+            createCrystalCollectEffect(
+                d.x,
+                d.y,
+                d.type
+            );
+
+
+            diamonds.splice(
+                i,
+                1
+            );
+
+
+            continue;
+        }
+
+
+        if (
+            d.y >
+            height + 50
+        ) {
+
+            diamonds.splice(
+                i,
+                1
+            );
+        }
+    }
+
+
+    /* ================================
+       PARTICLES
+    ================================= */
+
+    for(
+        let i =
+            particles.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const p =
+            particles[i];
+
+
+        p.x +=
+            p.vx *
+            frame;
+
+        p.y +=
+            p.vy *
+            frame;
+
+
+        p.vy +=
+            0.12 *
+            frame;
+
+
+        p.life -=
+            0.035 *
+            frame;
+
+
+        if (
+            p.life <= 0
+        ) {
+
+            particles.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+/* ===================================
+   COMBO
+=================================== */
+
+function showCombo(text) {
+
+    combo.textContent =
+        text;
+
+
+    combo.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        combo.timer
+    );
+
+
+    combo.timer =
+        setTimeout(
+            () => {
+
+                combo.classList.remove(
+                    "show"
+                );
+
+            },
+            700
+        );
+}
+
+
+/* ===================================
+   EXPLOSION
+=================================== */
+
+function createExplosion(
+    x,
+    y,
+    type = "normal"
+) {
+
+    let color =
+        "#6ee7ff";
+
+
+    if (
+        type === "rare"
+    ) {
+
+        color =
+            "#c77dff";
+
+    } else if (
+        type === "super"
+    ) {
+
+        color =
+            "#ff9f43";
+    }
+
+
+    for (
+        let i = 0;
+        i < 25;
+        i++
+    ) {
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+        const velocity =
+            1 +
+            Math.random() * 5;
+
+
+        particles.push({
+
+            x: x,
+
+            y: y,
+
+            vx:
+                Math.cos(angle) *
+                velocity,
+
+            vy:
+                Math.sin(angle) *
+                velocity,
+
+            life: 1,
+
+            color: color
+        });
+    }
+}
+
+
+function createCrystalCollectEffect(
+    x,
+    y,
+    type = "normal"
+) {
+
+    playerCollectPulse = 1;
+
+
+    let color = "#6ee7ff";
+
+
+    if (type === "rare") {
+        color = "#c77dff";
+    }
+
+    if (type === "super") {
+        color = "#ff9f43";
+    }
+
+
+    particles.push({
+
+        x: x,
+
+        y: y,
+
+        vx: 0,
+
+        vy: 0,
+
+        life: 1,
+
+        color: color,
+
+        ring: true,
+
+        size: 8
+    });
+
+
+    for (let i = 0; i < 16; i++) {
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+        const speed =
+            2 +
+            Math.random() * 3.5;
+
+
+        particles.push({
+
+            x: x,
+
+            y: y,
+
+            vx:
+                Math.cos(angle) *
+                speed,
+
+            vy:
+                Math.sin(angle) *
+                speed,
+
+            life: 1,
+
+            color: color
+        });
+    }
+}
+
+
+/* ===================================
+   DRAW BACKGROUND
+=================================== */
+
+function drawBackground() {
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            height
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#101b4d"
+    );
+
+    gradient.addColorStop(
+        0.45,
+        "#0b1232"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#030611"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    const glow =
+        ctx.createRadialGradient(
+            width / 2,
+            height * 0.18,
+            0,
+            width / 2,
+            height * 0.18,
+            width * 0.8
+        );
+
+
+    glow.addColorStop(
+        0,
+        "rgba(75,110,255,.20)"
+    );
+
+    glow.addColorStop(
+        0.45,
+        "rgba(60,80,220,.08)"
+    );
+
+    glow.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+
+    ctx.fillStyle =
+        glow;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    ctx.strokeStyle =
+        "rgba(100,180,255,.055)";
+
+    ctx.lineWidth = 1;
+
+
+    const offset =
+        (gameTime * 0.035) % 45;
+
+
+    for (
+        let x = -45;
+        x < width + 45;
+        x += 45
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            0
+        );
+
+        ctx.lineTo(
+            x,
+            height
+        );
+
+        ctx.stroke();
+    }
+
+
+    for (
+        let y = -45 + offset;
+        y < height + 45;
+        y += 45
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+        ctx.lineTo(
+            width,
+            y
+        );
+
+        ctx.stroke();
+    }
+
+
+    ctx.fillStyle =
+        "rgba(150,210,255,.35)";
+
+
+    for (
+        let i = 0;
+        i < 45;
+        i++
+    ) {
+
+        const x =
+            (i * 83) % width;
+
+
+        const y =
+            (
+                i * 137 +
+                gameTime *
+                (
+                    0.01 +
+                    (i % 3) *
+                    0.005
+                )
+            ) % height;
+
+
+        const size =
+            i % 4 === 0
+                ? 1.5
+                : 0.8;
+
+
+        ctx.globalAlpha =
+            0.25 +
+            Math.sin(
+                gameTime * 0.002 +
+                i
+            ) * 0.15;
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* ===================================
+   DRAW WALLS
+=================================== */
+
+function drawWalls() {
+
+    for (
+        const wall of walls
+    ) {
+
+        const top =
+            wall.y;
+
+        const bottom =
+            wall.y +
+            wall.height;
+
+
+        const gradient =
+            ctx.createLinearGradient(
+                0,
+                top,
+                0,
+                bottom
+            );
+
+
+        gradient.addColorStop(
+            0,
+            "#ff5c8a"
+        );
+
+        gradient.addColorStop(
+            0.45,
+            "#ff315f"
+        );
+
+        gradient.addColorStop(
+            1,
+            "#a51fff"
+        );
+
+
+        ctx.fillStyle =
+            gradient;
+
+
+        ctx.shadowColor =
+            "#ff3d81";
+
+        ctx.shadowBlur =
+            wall.moving
+                ? 24
+                : 20;
+
+
+        ctx.fillRect(
+            0,
+            top,
+            Math.max(
+                0,
+                wall.left
+            ),
+            wall.height
+        );
+
+
+        ctx.fillRect(
+            wall.right,
+            top,
+            Math.max(
+                0,
+                width -
+                wall.right
+            ),
+            wall.height
+        );
+
+
+        ctx.shadowBlur = 0;
+
+
+        ctx.fillStyle =
+            "rgba(255,255,255,.30)";
+
+
+        ctx.fillRect(
+            0,
+            top,
+            Math.max(
+                0,
+                wall.left
+            ),
+            2
+        );
+
+
+        ctx.fillRect(
+            wall.right,
+            top,
+            Math.max(
+                0,
+                width -
+                wall.right
+            ),
+            2
+        );
+
+
+        ctx.fillStyle =
+            "rgba(40,0,70,.20)";
+
+
+        ctx.fillRect(
+            0,
+            bottom - 4,
+            Math.max(
+                0,
+                wall.left
+            ),
+            4
+        );
+
+
+        ctx.fillRect(
+            wall.right,
+            bottom - 4,
+            Math.max(
+                0,
+                width -
+                wall.right
+            ),
+            4
+        );
+
+
+        if (wall.moving) {
+
+            ctx.fillStyle =
+                "rgba(255,255,255,.10)";
+
+
+            ctx.fillRect(
+                0,
+                top + 4,
+                Math.max(
+                    0,
+                    wall.left
+                ),
+                1
+            );
+
+
+            ctx.fillRect(
+                wall.right,
+                top + 4,
+                Math.max(
+                    0,
+                    width -
+                    wall.right
+                ),
+                1
+            );
+        }
+    }
+}
+
+
+/* ===================================
+   DRAW DIAMONDS
+=================================== */
+
+function drawDiamonds() {
+
+    for (
+        const d of diamonds
+    ) {
+
+        ctx.save();
+
+
+        ctx.translate(
+            d.x,
+            d.y
+        );
+
+
+        ctx.rotate(
+            d.rotation
+        );
+
+
+        let color;
+
+        let glow;
+
+
+        if (
+            d.type === "super"
+        ) {
+
+            color = "#ff9f43";
+
+            glow = "#ff6b00";
+
+        } else if (
+            d.type === "rare"
+        ) {
+
+            color = "#c77dff";
+
+            glow = "#9d4edd";
+
+        } else {
+
+            color = "#6ee7ff";
+
+            glow = "#00c8ff";
+        }
+
+
+        ctx.shadowColor =
+            glow;
+
+
+        ctx.shadowBlur =
+            d.type === "super"
+                ? 35
+                : 25;
+
+
+        ctx.fillStyle =
+            color;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            -d.size - 2
+        );
+
+        ctx.lineTo(
+            d.size + 2,
+            0
+        );
+
+        ctx.lineTo(
+            0,
+            d.size + 2
+        );
+
+        ctx.lineTo(
+            -d.size - 2,
+            0
+        );
+
+        ctx.closePath();
+
+        ctx.fill();
+
+
+        ctx.shadowBlur = 0;
+
+
+        ctx.fillStyle =
+            "rgba(255,255,255,.35)";
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            -d.size
+        );
+
+        ctx.lineTo(
+            d.size * .45,
+            0
+        );
+
+        ctx.lineTo(
+            0,
+            d.size * .2
+        );
+
+        ctx.closePath();
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+            "rgba(255,255,255,.9)";
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            -d.size * .25,
+            -d.size * .25,
+            1.5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        ctx.restore();
+    }
+}
+
+
+/* ===================================
+   DRAW PLAYER
+=================================== */
+
+function drawPlayer() {
+
+    ctx.save();
+
+
+    const pulse =
+        Math.sin(
+            gameTime * 0.008
+        ) * 1.5;
+
+
+    const collectScale =
+        playerCollectPulse *
+        7;
+
+
+    const radius =
+        11 +
+        pulse +
+        collectScale;
+
+
+    ctx.shadowColor =
+        "#38e8ff";
+
+    ctx.shadowBlur =
+        30;
+
+
+    ctx.fillStyle =
+        "rgba(70,220,255,.12)";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        playerX,
+        playerY,
+        radius + 9,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    const gradient =
+        ctx.createRadialGradient(
+            playerX - 4,
+            playerY - 5,
+            1,
+
+            playerX,
+            playerY,
+            radius
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#ffffff"
+    );
+
+    gradient.addColorStop(
+        0.25,
+        "#d8fbff"
+    );
+
+    gradient.addColorStop(
+        0.55,
+        "#52eaff"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#3867ff"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        playerX,
+        playerY,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.shadowBlur = 0;
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.9)";
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+        playerX - 4,
+        playerY - 5,
+        2.5,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.restore();
+}
+
+
+/* ===================================
+   DRAW PARTICLES
+=================================== */
+
+function drawParticles() {
+
+    for (const p of particles) {
+
+        ctx.globalAlpha =
+            Math.max(
+                0,
+                p.life
+            );
+
+
+        if (p.ring) {
+
+            const radius =
+                p.size +
+                (1 - p.life) * 38;
+
+
+            ctx.strokeStyle =
+                p.color;
+
+            ctx.lineWidth =
+                2.5 *
+                p.life;
+
+
+            ctx.shadowColor =
+                p.color;
+
+            ctx.shadowBlur =
+                18;
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                radius,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.stroke();
+
+
+            ctx.fillStyle =
+                p.color;
+
+            ctx.globalAlpha =
+                p.life * .12;
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                radius * .65,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+
+            continue;
+        }
+
+
+        ctx.fillStyle =
+            p.color ||
+            "#6ee7ff";
+
+        ctx.shadowColor =
+            p.color ||
+            "#6ee7ff";
+
+        ctx.shadowBlur =
+            8;
+
+
+        ctx.globalAlpha =
+            Math.max(
+                0,
+                p.life
+            );
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            1.5 +
+            p.life * 3,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+
+
+    ctx.shadowBlur = 0;
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* ===================================
+   DRAW
+=================================== */
+
+function draw() {
+
+    drawBackground();
+
+    drawWalls();
+
+    drawDiamonds();
+
+
+    if (!countdownActive) {
+
+        drawParticles();
+    }
+
+
+    if (
+        playerX !== null
+    ) {
+
+        drawPlayer();
+    }
+}
+
+
+/* ===================================
+   GAME LOOP
+=================================== */
+
+function loop(timestamp) {
+
+    if (!playing) {
+
+        draw();
+
+        return;
+    }
+
+
+    if (paused) {
+
+        draw();
+
+        animation = 0;
+
+        return;
+    }
+
+
+    const delta =
+        timestamp -
+        lastFrame;
+
+
+    lastFrame =
+        timestamp;
+
+
+    update(delta);
+
+    draw();
+
+
+    if (
+        playing &&
+        !paused
+    ) {
+
+        animation =
+            requestAnimationFrame(
+                loop
+            );
+    }
+}
+
+
+/* ===================================
+   INPUT
+=================================== */
+
+game.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (
+            event.target.closest("button")
+        ) {
+
+            return;
+        }
+
+
+        if (
+            event.pointerType === "touch" ||
+            event.pointerType === "pen"
+        ) {
+
+            turn();
+        }
+    }
+);
+
+
+/* ===================================
+   BUTTONS
+=================================== */
+
+document
+    .getElementById("start")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+document
+    .getElementById("restart")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+/*
+    Теперь кнопка "ПРОДОЛЖИТЬ" сначала
+    запускает Rewarded-рекламу.
+
+    Продолжение игры происходит только после
+    получения награды.
+*/
+
+document
+    .getElementById("continue")
+    .addEventListener(
+        "click",
+        continueWithRewardedAd
+    );
+
+
+/*
+    ВАЖНО:
+
+    Было:
+        goHome
+
+    Стало:
+        goHomeWithAd
+
+    Поэтому обычная fullscreen-реклама
+    показывается перед возвращением домой.
+*/
+
+document
+    .getElementById("home")
+    .addEventListener(
+        "click",
+        goHomeWithAd
+    );
+
+
+/* ===================================
+   PAUSE BUTTONS
+=================================== */
+
+pauseButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        /*
+            Во время обратного отсчёта
+            пауза недоступна.
+        */
+
+        if (
+            countdownActive
+        ) {
+
+            return;
+        }
+
+        pauseGame("manual");
+    }
+);
+
+
+pauseResumeButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        resumeGame();
+    }
+);
+
+
+/*
+    ВАЖНО:
+
+    Кнопка ДОМОЙ в меню паузы также
+    использует fullscreen-рекламу.
+*/
+
+pauseHomeButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        goHomeWithAd();
+    }
+);
+
+
+/* ===================================
+   INITIALIZATION
+=================================== */
+
+resetGame();
+
+draw();
+
+game.classList.add(
+    "menu-active"
+);
+
+menuLastFrame =
+    performance.now();
+
+menuAnimation =
+    requestAnimationFrame(
+        menuLoop
+    );
+
+</script>
+
+</body>
+</html>
