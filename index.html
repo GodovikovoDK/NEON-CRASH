@@ -4375,29 +4375,21 @@ function continueGame() {
 */
 
 async function continueWithRewardedAd() {
-    if (
-        continueUsed ||
-        playing ||
-        continueAdBusy
-    ) {
-        return;
-    }
-
-    continueAdBusy = true;
-
     try {
-        const rewarded =
-            await showRewardedAdAndThen();
+        const data = await vkBridge.send(
+            "VKWebAppShowNativeAds",
+            { ad_format: "reward" }
+        );
 
-        if (rewarded) {
+        console.log("Результат рекламы:", data.result);
+
+        if (data.result === "true" || data.result === true) {
             continueGame();
         } else {
-            console.log(
-                "Продолжение отменено: награда не получена"
-            );
+            console.log("Награда не подтверждена:", data.result);
         }
-    } finally {
-        continueAdBusy = false;
+    } catch (error) {
+        console.error("Ошибка рекламы:", error);
     }
 }
 
